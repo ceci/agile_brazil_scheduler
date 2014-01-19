@@ -5,39 +5,57 @@
 
 	<div id="ids"></div>
 
-	<style type="text/css">
-		#ids {
-			width: 200px;
-			float: right;
-		}
+<style type="text/css">
+	table {
+		border: 1px solid black;
+		float: left;
+	}
 
-		#ids:before{
-			content: "Sessions";
-			font-weight: bold;
-		}
+	td {
+		background-color: #DDDDDD;
+		width: 150px;
+		padding: 5px;
+	}
 
-		.session {
-			padding: 10px;
-			border: #000 solid 1px;
-			margin: 2px;
-		}
+	#ids {
+		width: 200px;
+		float: right;
+	}
 
-	</style>
+	#ids:before{
+		content: "Sessions";
+		font-weight: bold;
+	}
 
-	<script src="jquery-2.0.3.min.js"></script>
-	<script src="handlebars-v1.3.0.js"></script>
-	<script type="text/javascript">
+	.day {
+		background-color: #666;
+		color: #FFF;
+	}
+
+	.session {
+		padding: 5px;
+		border: #000 solid 1px;
+		margin: 2px;
+	}
+
+</style>
+
+<script src="jquery-2.0.3.min.js"></script>
+<script type="text/javascript">
+	var sessions = [];
+
 
 	function retrieveSessions() {
 		var address = "accepted_sessions.json";
 		$.getJSON(address)
-		.done(function(sessions) {
-			$.each(sessions, function(i, session) {
+		.done(function(accepted_sessions) {
+			sessions = accepted_sessions;
+			$.each(accepted_sessions, function(i, session) {
 				$("<div class='session'>" + session.id + "</div>").appendTo("#ids");
 			});
 		})
 		.fail(function() {
-			console.log("error retrieving sessions");
+			console.log("error retrieving accepted_sessions");
 		});
 	}
 
@@ -53,20 +71,42 @@
 		};
 	}
 
+	function buildTableHead(date) {
+		var thead = $("<thead>");
+		var tr = $("<tr>");
+		var firstColumn = $("<th>").attr("class", "day").html(date.toLocaleDateString()).appendTo(tr);
+		for (var i = 1; i <= 6; i++) {
+			var td = $("<th>").attr("data-room", i).html("Sala "+ i).appendTo(tr);
+		}
+		tr.appendTo(thead);
+		return thead;
+	}
+
+	function buildTableLine(date) {
+		var tr = $("<tr>").attr("date-time", date.timeToJSON());
+		var th = $("<th>").html(date.timeToJSON()).appendTo(tr);
+
+		for (var i = 1; i <= 6; i++) {
+			var td = $("<td>").attr("data-room", i).appendTo(tr);
+		}
+		return tr;
+	}
+
 	function buildTable() {
-		var date = new Date(2014, 11, 5, 9, 0)
+		var date = new Date(2014, 11, 5, 9, 0);
 		var table = $("<table>").attr("data-date", date.dateToJSON());
 
+		buildTableHead(date).appendTo(table);
 		while(date.getHours() < 19) {
-			var tr = $("<tr>").attr("date-time", date.timeToJSON());
-			
+			buildTableLine(date).appendTo(table);
 			date.addHalfHour();
 		}
+		table.appendTo("#schedule");
 	}
 
 	retrieveSessions();	
 	tweakDates();
 	buildTable();
-	</script>
+</script>
 
 </html>
