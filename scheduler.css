@@ -1,0 +1,40 @@
+table {
+	border: 1px solid black;
+	clear:both;
+	margin-bottom: 20px;
+}
+
+td {
+	background-color: #DDDDDD;
+	width: 150px;
+	padding: 5px;
+	height: 18px; //why is it not working?
+}
+
+#ids {
+	width: 200px;
+	float: right;
+}
+
+#ids:before{
+	content: "Sessions";
+	font-weight: bold;
+}
+
+#schedule {
+	float: left;
+}
+.30minutes {
+	height: 12px;
+}
+
+.day {
+	background-color: #666;
+	color: #FFF;
+}
+
+.session {
+	padding: 5px;
+	border: #000 solid 1px;
+	margin: 2px;
+}

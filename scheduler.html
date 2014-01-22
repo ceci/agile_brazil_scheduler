@@ -1,151 +1,51 @@
-<meta charset="UTF-8">
+<!DOCTYPE html>
 <html>
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="scheduler.css">
+</head>
+<body>
 	<div id="schedule">
 	</div>
 
 	<div id="ids"></div>
 
-<style type="text/css">
-	table {
-		border: 1px solid black;
-		clear:both;
-		margin-bottom: 20px;
-	}
+	<script src="jquery-2.0.3.min.js"></script>
+	<script src="DateExtensions.js"></script>
+	<script src="Session.js"></script>
+	<script src="TableBuilder.js"></script>
 
-	td {
-		background-color: #DDDDDD;
-		width: 150px;
-		padding: 5px;
-		height: 18px; //why is it not working?
-	}
+	<script type="text/javascript">
+		var sessions = [];
 
-	#ids {
-		width: 200px;
-		float: right;
-	}
-
-	#ids:before{
-		content: "Sessions";
-		font-weight: bold;
-	}
-
-	#schedule {
-		float: left;
-	}
-	.30minutes {
-		height: 12px;
-	}
-
-	.day {
-		background-color: #666;
-		color: #FFF;
-	}
-
-	.session {
-		padding: 5px;
-		border: #000 solid 1px;
-		margin: 2px;
-	}
-
-</style>
-
-<script src="jquery-2.0.3.min.js"></script>
-<script type="text/javascript">
-	var sessions = [];
-
-	function Session(session) {
-		this.id = session.id;
-		this.room = session.room_id;
-
-		if (session.start_at)
-			this.startTime = new Date(session.start_at);
-		if (session.end_at)
-			this.endTime = new Date(session.end_at);
-
-		this.allocated = function() {
-			return this.startTime && this.endTime;
-		}
-
-		this.positionYourself = function() {
-			var td = $("[data-room='" + this.room + "'][data-time='" + this.startTime.toJSON() + "']");
-			td.text(this.id);
-		}
-	}
-
-	function retrieveSessions() {
-		var address = "accepted_sessions.json";
-		$.getJSON(address)
-		.done(function(accepted_sessions) {
-			$.each(accepted_sessions, function(i) {
-				var session = new Session(this);
-				if (!session.allocated()) {
-					$("<div>" + session.id + "</div>")
-								.attr("class", "session 30minutes")
-								.appendTo("#ids");
-				} else {
-					session.positionYourself();
-				}
-				sessions.push(session);
+		function retrieveSessions() {
+			var address = "accepted_sessions.json";
+			$.getJSON(address)
+			.done(function(accepted_sessions) {
+				$.each(accepted_sessions, function(i) {
+					var session = new Session(this);
+					if (!session.allocated()) {
+						$("<div>" + session.id + "</div>")
+									.attr("class", "session 30minutes")
+									.appendTo("#ids");
+					} else {
+						session.positionYourself();
+					}
+					sessions.push(session);
+				});
+			})
+			.fail(function() {
+				console.log("error retrieving accepted_sessions");
 			});
-		})
-		.fail(function() {
-			console.log("error retrieving accepted_sessions");
-		});
-	}
-
-	function tweakDates() {
-		Date.prototype.addHalfHour = function() {
-			this.setTime(this.getTime() + 30 * 60 * 1000);
-		};
-		Date.prototype.dateToJSON = function() {
-			return this.toJSON().substring(0, 11);
-		};
-		Date.prototype.timeToJSON = function() {
-			return this.toLocaleTimeString().substring(0,5);
-		};
-	}
-
-	function buildTableHead(date) {
-		var thead = $("<thead>");
-		var tr = $("<tr>");
-		var firstColumn = $("<th>").attr("class", "day")
-									.html(date.toLocaleDateString())
-									.appendTo(tr);
-		for (var i = 8; i <= 13; i++) {
-			var td = $("<th>").attr("data-room", i).html("Sala "+ i).appendTo(tr);
 		}
-		tr.appendTo(thead);
-		return thead;
-	}
 
-	function buildTableLine(date) {
-		var tr = $("<tr>").attr("class", "30minutes");
-		var th = $("<th>").html(date.timeToJSON()).appendTo(tr);
+		// main
+		var tableBuilder = new TableBuilder();
+		tableBuilder.build(new Date(2013, 5, 26, 9, 0));
+		tableBuilder.build(new Date(2013, 5, 27, 9, 0));
+		tableBuilder.build(new Date(2013, 5, 28, 9, 0));
 
-		for (var i = 8; i <= 13; i++) {
-			var td =   $("<td>").attr("data-room", i)
-								.attr("data-time", date.toJSON())
-								.appendTo(tr);
-		}
-		return tr;
-	}
-
-	function buildTable(date) {
-		var table = $("<table>").attr("data-date", date.dateToJSON());
-
-		buildTableHead(date).appendTo(table);
-		while(date.getHours() < 19) {
-			buildTableLine(date).appendTo(table);
-			date.addHalfHour();
-		}
-		table.appendTo("#schedule");
-	}
-
-	tweakDates();
-	buildTable(new Date(2013, 5, 26, 9, 0));
-	buildTable(new Date(2013, 5, 27, 9, 0));
-	buildTable(new Date(2013, 5, 28, 9, 0));
-	retrieveSessions();	
-</script>
-
+		retrieveSessions();	
+	</script>
+</body>
 </html>
