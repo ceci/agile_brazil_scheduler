@@ -8,13 +8,15 @@
 <style type="text/css">
 	table {
 		border: 1px solid black;
-		float: left;
+		clear:both;
+		margin-bottom: 20px;
 	}
 
 	td {
 		background-color: #DDDDDD;
 		width: 150px;
 		padding: 5px;
+		height: 18px; //why is it not working?
 	}
 
 	#ids {
@@ -25,6 +27,13 @@
 	#ids:before{
 		content: "Sessions";
 		font-weight: bold;
+	}
+
+	#schedule {
+		float: left;
+	}
+	.30minutes {
+		height: 12px;
 	}
 
 	.day {
@@ -44,14 +53,39 @@
 <script type="text/javascript">
 	var sessions = [];
 
+	function Session(session) {
+		this.id = session.id;
+		this.room = session.room_id;
+
+		if (session.start_at)
+			this.startTime = new Date(session.start_at);
+		if (session.end_at)
+			this.endTime = new Date(session.end_at);
+
+		this.allocated = function() {
+			return this.startTime && this.endTime;
+		}
+
+		this.positionYourself = function() {
+			var td = $("[data-room='" + this.room + "'][data-time='" + this.startTime.toJSON() + "']");
+			td.text(this.id);
+		}
+	}
 
 	function retrieveSessions() {
 		var address = "accepted_sessions.json";
 		$.getJSON(address)
 		.done(function(accepted_sessions) {
-			sessions = accepted_sessions;
-			$.each(accepted_sessions, function(i, session) {
-				$("<div class='session'>" + session.id + "</div>").appendTo("#ids");
+			$.each(accepted_sessions, function(i) {
+				var session = new Session(this);
+				if (!session.allocated()) {
+					$("<div>" + session.id + "</div>")
+								.attr("class", "session 30minutes")
+								.appendTo("#ids");
+				} else {
+					session.positionYourself();
+				}
+				sessions.push(session);
 			});
 		})
 		.fail(function() {
@@ -74,8 +108,10 @@
 	function buildTableHead(date) {
 		var thead = $("<thead>");
 		var tr = $("<tr>");
-		var firstColumn = $("<th>").attr("class", "day").html(date.toLocaleDateString()).appendTo(tr);
-		for (var i = 1; i <= 6; i++) {
+		var firstColumn = $("<th>").attr("class", "day")
+									.html(date.toLocaleDateString())
+									.appendTo(tr);
+		for (var i = 8; i <= 13; i++) {
 			var td = $("<th>").attr("data-room", i).html("Sala "+ i).appendTo(tr);
 		}
 		tr.appendTo(thead);
@@ -83,17 +119,18 @@
 	}
 
 	function buildTableLine(date) {
-		var tr = $("<tr>").attr("date-time", date.timeToJSON());
+		var tr = $("<tr>").attr("class", "30minutes");
 		var th = $("<th>").html(date.timeToJSON()).appendTo(tr);
 
-		for (var i = 1; i <= 6; i++) {
-			var td = $("<td>").attr("data-room", i).appendTo(tr);
+		for (var i = 8; i <= 13; i++) {
+			var td =   $("<td>").attr("data-room", i)
+								.attr("data-time", date.toJSON())
+								.appendTo(tr);
 		}
 		return tr;
 	}
 
-	function buildTable() {
-		var date = new Date(2014, 11, 5, 9, 0);
+	function buildTable(date) {
 		var table = $("<table>").attr("data-date", date.dateToJSON());
 
 		buildTableHead(date).appendTo(table);
@@ -104,9 +141,11 @@
 		table.appendTo("#schedule");
 	}
 
-	retrieveSessions();	
 	tweakDates();
-	buildTable();
+	buildTable(new Date(2013, 5, 26, 9, 0));
+	buildTable(new Date(2013, 5, 27, 9, 0));
+	buildTable(new Date(2013, 5, 28, 9, 0));
+	retrieveSessions();	
 </script>
 
 </html>
