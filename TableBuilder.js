@@ -14,7 +14,7 @@ function TableBuilder() {
 	}
 
 	function buildTableLine(date) {
-		var tr = $("<tr>").attr("class", "30minutes");
+		var tr = $("<tr>");
 		var th = $("<th>").html(date.timeToJSON()).appendTo(tr);
 
 		for (var i = 8; i <= 13; i++) {

@@ -2,15 +2,18 @@ table {
 	border: 1px solid black;
 	clear:both;
 	margin-bottom: 20px;
+	height: 100%;
 }
-
 td {
 	background-color: #DDDDDD;
 	width: 150px;
 	padding: 5px;
-	height: 18px; //why is it not working?
+	height: 100%;
 }
-
+td div {
+	background-color: #FFF;
+	height: 100%;
+}
 #ids {
 	width: 200px;
 	float: right;
@@ -24,10 +27,6 @@ td {
 #schedule {
 	float: left;
 }
-.30minutes {
-	height: 12px;
-}
-
 .day {
 	background-color: #666;
 	color: #FFF;

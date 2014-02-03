@@ -21,7 +21,8 @@ function Session(session) {
 					"[data-time='" + time.toJSON() + "']")
 					.attr("colspan", this.roomspan)
 					.attr("rowspan", this.timespan);
-		td.text(this.id);
+		var div = $("<div>").text(this.id).draggable();
+		div.appendTo(td);
 		removeCells(this.roomspan - 1, this.room + 1, time);
 		time.addHalfHour();
 		for (var i = 1; i < this.timespan; i++) {
@@ -33,10 +34,8 @@ function Session(session) {
 	function removeCells(howMany, actualRoom, time) {
 		var roomToBeRemoved = howMany + actualRoom - 1;
 		while (roomToBeRemoved >=	 actualRoom) {
-			console.log("=== Removing cell " + time + " from " + roomToBeRemoved);
 			var cell = $("[data-room='" + roomToBeRemoved + "']" +
 				"[data-time='" + time.toJSON() + "']");
-			console.log(cell);
 			cell.remove();
 			roomToBeRemoved--;
 		}
