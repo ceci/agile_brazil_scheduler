@@ -21,7 +21,7 @@ function Session(session) {
 					"[data-time='" + time.toJSON() + "']")
 					.attr("colspan", this.roomspan)
 					.attr("rowspan", this.timespan);
-		var div = $("<div>").text(this.id).draggable();
+		var div = $("<div>").addClass("session").text(this.id).draggable({helper: "clone"});
 		div.appendTo(td);
 		removeCells(this.roomspan - 1, this.room + 1, time);
 		time.addHalfHour();

@@ -40,13 +40,20 @@
 			});
 		}
 
+		function removeSession (event, ui) {
+			var session = ui.draggable;
+			session.css("position", "static");
+			$(this).append(session);
+		}
+
 		// main
 		var tableBuilder = new TableBuilder();
 		tableBuilder.build(new Date(2013, 5, 26, 9, 0));
 		tableBuilder.build(new Date(2013, 5, 27, 9, 0));
 		tableBuilder.build(new Date(2013, 5, 28, 9, 0));
 
-		retrieveSessions();	
+		retrieveSessions();
+		$("#ids").droppable({drop: removeSession});
 	</script>
 </body>
 </html>

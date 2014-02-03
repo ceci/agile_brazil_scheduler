@@ -1,27 +1,32 @@
 table {
 	border: 1px solid black;
-	clear:both;
 	margin-bottom: 20px;
 	height: 100%;
 }
 td {
-	background-color: #DDDDDD;
+	background-color: #669;
 	width: 150px;
 	padding: 5px;
 	height: 100%;
 }
 td div {
-	background-color: #FFF;
 	height: 100%;
 }
 #ids {
-	width: 200px;
+	background-color: #969;
 	float: right;
+	height: 500px;
+	width: 240px;
+	padding: 5px;
 }
 
 #ids:before{
 	content: "Sessions";
 	font-weight: bold;
+}
+
+#ids div {
+	margin-top: 5px;
 }
 
 #schedule {
@@ -33,7 +38,6 @@ td div {
 }
 
 .session {
-	padding: 5px;
+	background-color: #99C;
 	border: #000 solid 1px;
-	margin: 2px;
 }

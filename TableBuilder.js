@@ -20,9 +20,15 @@ function TableBuilder() {
 		for (var i = 8; i <= 13; i++) {
 			var td =   $("<td>").attr("data-room", i)
 								.attr("data-time", date.toJSON())
+								.droppable({drop: addSessionToTable})
 								.appendTo(tr);
 		}
 		return tr;
+	}
+
+	function addSessionToTable(event, ui) {
+		var session = ui.draggable;
+		$(this).append(session);
 	}
 
 	this.build = function(date) {
