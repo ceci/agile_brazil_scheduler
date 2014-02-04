@@ -17,7 +17,7 @@
 	<script src="TableBuilder.js"></script>
 
 	<script type="text/javascript">
-		var sessions = [];
+		var sessions = {};
 
 		function retrieveSessions() {
 			var address = "accepted_sessions.json";
@@ -25,14 +25,15 @@
 			.done(function(accepted_sessions) {
 				$.each(accepted_sessions, function(i) {
 					var session = new Session(this);
+
 					if (!session.allocated()) {
 						$("<div>" + session.id + "</div>")
-									.attr("class", "session 30minutes")
+									.attr("class", "session")
 									.appendTo("#ids");
 					} else {
 						session.positionYourself();
 					}
-					sessions.push(session);
+					sessions[session.id] = session;
 				});
 			})
 			.fail(function() {
@@ -41,9 +42,11 @@
 		}
 
 		function removeSession (event, ui) {
-			var session = ui.draggable;
-			session.css("position", "static");
-			$(this).append(session);
+			var sessionDiv = ui.draggable;
+			sessionDiv.css("position", "static");
+			$(this).append(sessionDiv);
+			var session = sessions[sessionDiv.html()];
+			session.removeYourself();
 		}
 
 		// main

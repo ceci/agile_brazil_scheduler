@@ -21,7 +21,9 @@ function Session(session) {
 					"[data-time='" + time.toJSON() + "']")
 					.attr("colspan", this.roomspan)
 					.attr("rowspan", this.timespan);
-		var div = $("<div>").addClass("session").text(this.id).draggable({helper: "clone"});
+		var div = $("<div>").addClass("session")
+							.text(this.id)
+							.draggable({helper: "clone"});
 		div.appendTo(td);
 		removeCells(this.roomspan - 1, this.room + 1, time);
 		time.addHalfHour();
@@ -33,11 +35,66 @@ function Session(session) {
 
 	function removeCells(howMany, actualRoom, time) {
 		var roomToBeRemoved = howMany + actualRoom - 1;
-		while (roomToBeRemoved >=	 actualRoom) {
+		while (roomToBeRemoved >= actualRoom) {
 			var cell = $("[data-room='" + roomToBeRemoved + "']" +
 				"[data-time='" + time.toJSON() + "']");
 			cell.remove();
 			roomToBeRemoved--;
 		}
+	}
+
+	this.removeYourself = function() {
+		var time = new Date(this.startTime.toJSON());
+		var td = $("[data-room='" + this.room + "']" +
+					"[data-time='" + time.toJSON() + "']");
+		var tr = td.parent();
+		td.remove();
+		for (var i = 1; i <= this.timespan; i++) {
+			this.recoverCellsFrom(tr, time);
+			tr = tr.next();
+			time.addHalfHour();
+		}
+		cleanSession();
+	}
+
+	// hipster version
+	var cleanSession = (function() {
+		this.room = undefined;
+		this.startTime = undefined;
+		this.endTime = undefined;
+	}).bind(this);
+
+	function byRoom(one, other) {
+		var first = one.getAttribute("data-room");
+		var second = other.getAttribute("data-room");
+		if (first == null)
+			return -1;
+		if (second == null)
+			return 1;
+		return first - second;
+	}
+
+
+	this.recoverCellsFrom = function(line, time) {
+		var tableBuilder = new TableBuilder();
+		var lastRoom = this.roomspan + this.room - 1;
+		for (var r = this.room; r <= lastRoom; r++) {
+			var cell = tableBuilder.buildCell(time, r);
+			placeCell(line, cell);
+		}
+	}
+
+	function placeCell(line, cell) {
+		var room = cell.attr("data-room");
+		console.log("room number: " + room)
+		for (var i =  room - 1; i >= 8; i--) {
+			var object = line.find("[data-room='" + i + "']");
+			if (object.is("td")) {
+				cell.insertAfter(object);
+				return;
+			}
+		}
+		var th = line.find("th");
+		cell.insertAfter(th);
 	}
 }

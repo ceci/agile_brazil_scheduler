@@ -18,12 +18,18 @@ function TableBuilder() {
 		var th = $("<th>").html(date.timeToJSON()).appendTo(tr);
 
 		for (var i = 8; i <= 13; i++) {
-			var td =   $("<td>").attr("data-room", i)
-								.attr("data-time", date.toJSON())
-								.droppable({drop: addSessionToTable})
-								.appendTo(tr);
+			var td = $("<td>").attr("data-room", i)
+						.attr("data-time", date.toJSON())
+						.droppable({drop: addSessionToTable});
+			td.appendTo(tr);
 		}
 		return tr;
+	}
+
+	this.buildCell = function(date, room) {
+		return $("<td>").attr("data-room", room)
+						.attr("data-time", date.toJSON())
+						.droppable({drop: addSessionToTable});
 	}
 
 	function addSessionToTable(event, ui) {
