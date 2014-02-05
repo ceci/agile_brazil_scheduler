@@ -57,23 +57,11 @@ function Session(session) {
 		cleanSession();
 	}
 
-	// hipster version
 	var cleanSession = (function() {
 		this.room = undefined;
 		this.startTime = undefined;
 		this.endTime = undefined;
 	}).bind(this);
-
-	function byRoom(one, other) {
-		var first = one.getAttribute("data-room");
-		var second = other.getAttribute("data-room");
-		if (first == null)
-			return -1;
-		if (second == null)
-			return 1;
-		return first - second;
-	}
-
 
 	this.recoverCellsFrom = function(line, time) {
 		var tableBuilder = new TableBuilder();
