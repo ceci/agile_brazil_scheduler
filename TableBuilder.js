@@ -29,12 +29,18 @@ function TableBuilder() {
 	this.buildCell = function(date, room) {
 		return $("<td>").attr("data-room", room)
 						.attr("data-time", date.toJSON())
-						.droppable({drop: addSessionToTable});
+						.droppable({drop: addSessionToTable, accept: ".notAllocated"});
 	}
 
 	function addSessionToTable(event, ui) {
-		var session = ui.draggable;
-		$(this).append(session);
+		var sessionDiv = ui.draggable;
+		var session = sessions[sessionDiv.html()];
+		if (session.fitIn(this)){
+			session.startTime = new Date($(this).attr("data-time"));
+			session.room = parseInt($(this).attr("data-room"));
+			session.positionYourself();
+		}
+		sessionDiv.remove();
 	}
 
 	this.build = function(date) {

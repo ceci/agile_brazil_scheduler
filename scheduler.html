@@ -28,7 +28,7 @@
 
 					if (!session.allocated()) {
 						$("<div>" + session.id + "</div>")
-									.attr("class", "session")
+									.attr("class", "session notAllocated")
 									.appendTo("#ids");
 					} else {
 						session.positionYourself();
@@ -44,6 +44,8 @@
 		function removeSession (event, ui) {
 			var sessionDiv = ui.draggable;
 			sessionDiv.css("position", "static");
+			sessionDiv.removeClass("allocated");
+			sessionDiv.addClass("notAllocated");
 			$(this).append(sessionDiv);
 			var session = sessions[sessionDiv.html()];
 			session.removeYourself();
@@ -56,7 +58,7 @@
 		tableBuilder.build(new Date(2013, 5, 28, 9, 0));
 
 		retrieveSessions();
-		$("#ids").droppable({drop: removeSession});
+		$("#ids").droppable({drop: removeSession, accept: ".allocated"});
 	</script>
 </body>
 </html>

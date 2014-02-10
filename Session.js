@@ -7,12 +7,13 @@ function Session(session) {
 
 	if (session.start_at)
 		this.startTime = new Date(session.start_at);
-	if (session.end_at)
-		this.endTime = new Date(session.end_at);
-	this.timespan = this.startTime.halfHoursUntil(this.endTime);
+	if (session.end_at) {
+		var endTime = new Date(session.end_at);
+		this.timespan = this.startTime.halfHoursUntil(endTime);
+	}
 
 	this.allocated = function() {
-		return this.startTime && this.endTime;
+		return this.startTime;
 	}
 
 	this.positionYourself = function() {
@@ -21,7 +22,7 @@ function Session(session) {
 					"[data-time='" + time.toJSON() + "']")
 					.attr("colspan", this.roomspan)
 					.attr("rowspan", this.timespan);
-		var div = $("<div>").addClass("session")
+		var div = $("<div>").addClass("session allocated")
 							.text(this.id)
 							.draggable({helper: "clone"});
 		div.appendTo(td);
@@ -60,7 +61,6 @@ function Session(session) {
 	var cleanSession = (function() {
 		this.room = undefined;
 		this.startTime = undefined;
-		this.endTime = undefined;
 	}).bind(this);
 
 	this.recoverCellsFrom = function(line, time) {
@@ -74,7 +74,6 @@ function Session(session) {
 
 	function placeCell(line, cell) {
 		var room = cell.attr("data-room");
-		console.log("room number: " + room)
 		for (var i =  room - 1; i >= 8; i--) {
 			var object = line.find("[data-room='" + i + "']");
 			if (object.is("td")) {
@@ -84,5 +83,9 @@ function Session(session) {
 		}
 		var th = line.find("th");
 		cell.insertAfter(th);
+	}
+
+	this.fitIn = function(td) {
+		return true;
 	}
 }
